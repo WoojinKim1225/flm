@@ -1,0 +1,4 @@
+str name = "Hello World123!\n234";
+int i = 10;
+
+print(name);

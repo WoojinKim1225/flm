@@ -1,0 +1,7 @@
++ int:8 a=123;
++ float:16 f=2.5;
++ float3:8 v={1,2,3};
+
++ int main(){
+    console->printf(a);
+}
