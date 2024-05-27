@@ -1,7 +1,6 @@
-#ifndef IO_H
-#define IO_H
+#ifndef FLM_IO_H
+#define FLM_IO_H
 
-char* get_file_contents(const char* filepath);
-
+char* flmReadFile(const char* filename);
 
 #endif

@@ -1,28 +1,33 @@
 #include "include/io.h"
-#include "stdlib.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+char* flmReadFile(const char* filename){
+    FILE* fp;
+    char* line = NULL;
+    size_t len = 0;
+    ssize_t read;
 
-char* get_file_contents(const char* filepath) {
-    char* buffer = 0;
-    long length;
-
-    FILE* f = fopen(filepath, "rb");
-
-    if (f)
-    {
-        fseek(f, 0, SEEK_END);
-        length = ftell(f);
-        fseek(f, 0, SEEK_SET);
-        buffer = calloc(length, length);
-        if (buffer) {
-            fread(buffer, 1, length, f);
-        }
-
-        fclose(f);
-        return buffer;
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        printf("Could not read file '%s'\n", filename);
+        exit(1);
     }
 
-    printf("Error reading file %s\n", filepath);
-    exit(2);
+    char* buffer = (char*) calloc(1, sizeof(char));
+    buffer[0] = '\0';
+
+    while ((read = getline(&line, &len, fp))!= -1)
+    {
+        buffer = (char*) realloc(buffer, (strlen(buffer) + strlen(line) + 1) * sizeof(char));
+        strcat(buffer, line);
+    }
+
+    fclose(fp);
+    if (line) {
+        free(line);
+    }
+    return buffer;
+    
 }

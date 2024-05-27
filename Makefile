@@ -7,39 +7,39 @@ ifeq ($(OS),Linux)
     COPY = cp
     RM = rm -f
     SEP = /
+    CC = gcc
 else ifeq ($(OS),Darwin)
     INSTALL_DIR = /usr/local/bin
     MKDIR = mkdir -p
     COPY = cp
     RM = rm -f
     SEP = /
+    CC = gcc
 else
     INSTALL_DIR = C:\\Scripts
     MKDIR = if not exist $(INSTALL_DIR) mkdir $(INSTALL_DIR)
     COPY = copy
     RM = del /Q
     SEP = \\
+    CC = gcc
 endif
 
 exec = flm.out
 sources = $(wildcard src/*.c)
-objects = $(sources:.c=.o)
+objects = $(patsubst src/%.c, src/%.o, $(sources))
 flags = -g
 
-
 $(exec): $(objects)
-	gcc $(objects) $(flags) -o $(exec)
+	$(CC) $(objects) $(flags) -o $(exec)
 
-%.o: %.c include/%.h
-	gcc -c $(flags) $< -o $@
+src/%.o: src/%.c include/%.h
+	$(CC) -c $(flags) $< -o $@
 
 install:
 	$(MAKE)
 	$(MKDIR) $(INSTALL_DIR)
-	$(COPY) flm.out $(INSTALL_DIR)$(SEP)flm.out
-
+	$(COPY) $(exec) $(INSTALL_DIR)$(SEP)$(exec)
 
 clean:
-	$(RM) *.out
-	$(RM) *.o
+	$(RM) $(exec)
 	$(RM) src$(SEP)*.o

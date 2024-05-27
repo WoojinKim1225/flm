@@ -1,39 +1,25 @@
 #ifndef PARSER_H
 #define PARSER_H
-#include "ast.h"
 #include "lexer.h"
+#include "AST.h"
 
 typedef struct PARSER_STRUCT{
-    lexer_T* lexer;
-    token_T* currentToken;
-    token_T* prevToken;
-} parser_T;
+    lexerT* lexer;
+    tokenT* token;
+} parserT;
 
-parser_T* init_parser(lexer_T* lexer);
+parserT* initParser(lexerT* lexer);
 
-void parser_eat(parser_T* parser, int token_type);
+tokenT* parserEat(parserT* parser, int type);
 
-AST_T* parser_parse(parser_T* parser);
+ASTT* parserParse(parserT* parser);
 
-AST_T* parser_parse_statement(parser_T* parser);
+ASTT* parserParseID(parserT* parser);
 
-AST_T* parser_parse_statements(parser_T* parser);
+ASTT* parserParseExpr(parserT* parser);
 
-AST_T* parser_parse_expr(parser_T* parser);
+ASTT* parserParseList(parserT* parser);
 
-AST_T* parser_parse_factor(parser_T* parser);
+ASTT* parserParseCompound(parserT* parser);
 
-AST_T* parser_parse_term(parser_T* parser);
-
-AST_T* parser_parse_function_call(parser_T* parser);
-
-AST_T* parser_parse_variable_definition(parser_T* parser);
-
-AST_T* parser_parse_variable(parser_T* parser);
-
-AST_T* parser_parse_number(parser_T* parser);
-
-AST_T* parser_parse_string(parser_T* parser);
-
-AST_T* parser_parse_id(parser_T* parser);
 #endif

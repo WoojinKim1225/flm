@@ -1,30 +1,32 @@
 #ifndef LEXER_H
 #define LEXER_H
 #include "token.h"
+#include <stdlib.h>
 
 typedef struct LEXER_STRUCT
 {
-    char c;
+    char* src;
+    size_t srcSize;
     unsigned int i;
-    char* contents;
-} lexer_T;
+    char c;
+} lexerT;
 
-lexer_T* init_lexer(char* contents);
+lexerT* initLexer(char* src);
 
-void lexer_advance(lexer_T* lexer);
+void lexerAdvance(lexerT* lexer);
 
-void lexer_skip_whitespace(lexer_T* lexer);
+char lexerPeek(lexerT* lexer, int offset);
 
-token_T* lexer_get_next_token(lexer_T* lexer);
+tokenT* lexerAdvanceWith(lexerT* lexer, tokenT* token);
 
-token_T* lexer_collect_number(lexer_T* lexer);
+tokenT* lexerAdvanceCurrent(lexerT* lexer, int type);
 
-token_T* lexer_collect_string(lexer_T* lexer);
+void lexerSkipWhitespace(lexerT* lexer);
 
-token_T* lexer_collect_id(lexer_T* lexer);
+tokenT* lexerParseID(lexerT* lexer);
 
-token_T* lexer_advance_with_token(lexer_T* lexer, token_T* token);
+tokenT* lexerParseNum(lexerT* lexer);
 
-char* lexer_get_current_char_as_string(lexer_T* lexer);
+tokenT* lexerNextToken(lexerT* lexer);
 
 #endif

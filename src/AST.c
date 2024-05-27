@@ -1,24 +1,13 @@
 #include "include/AST.h"
 #include <stdlib.h>
 
-AST_T* init_ast(int type)
-{
-    AST_T* ast = calloc(1, sizeof(struct AST_STRUCT));
+ASTT* initAst(int type){
+    ASTT* ast = calloc(1, sizeof(struct AST_STRUCT));
     ast->type = type;
 
-    ast->variable_definition_var_name = (void*)0;
-    ast->variable_definition_value = (void*)0;
-
-    ast->variable_name = (void*)0;
-
-    ast->function_call_name = (void*)0;
-    ast->function_call_arguments = (void*)0;
-    ast->function_call_arguments_size = 0;
-
-    ast->string_value = (void*)0;
-
-    ast->compound_value = (void*)0;
-    ast->compound_size = 0;
+    if (type == AST_COMPOUND) {
+        ast->children = initList(sizeof(struct AST_STRUCT*));
+    }
 
     return ast;
 }

@@ -11,6 +11,14 @@
         "functional": "c",
         "tuple": "c",
         "type_traits": "c",
-        "utility": "c"
-    }
+        "utility": "c",
+        "string": "c",
+        "limits": "c",
+        "memory": "c",
+        "flm.h": "c",
+        "list.h": "c"
+    },
+    "cSpell.words": [
+        "ASTT"
+    ]
 }
