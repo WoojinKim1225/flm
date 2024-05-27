@@ -1,3 +1,3 @@
-i:32 main = (i:16 argc, s* argv){
-    console -> printf(a);
+i:32 main(i:32 _argc, c:16 *_argv[]) => {
+    return(0);
 }

@@ -15,8 +15,8 @@ const char* tokenType2Str(int type) {
     switch(type) {
         case TOKEN_ID:
             return "TOKEN_ID";
-        case TOKEN_SUBS:
-            return "TOKEN_SUBS";
+        case TOKEN_ASSIGNMENT:
+            return "TOKEN_ASSIGNMENT";
         case TOKEN_PAREN_L:
             return "TOKEN_PAREN_L";
         case TOKEN_PAREN_R:
@@ -25,6 +25,10 @@ const char* tokenType2Str(int type) {
             return "TOKEN_BRACE_L";
         case TOKEN_BRACE_R:
             return "TOKEN_BRACE_R";
+        case TOKEN_BRACKET_L:
+            return "TOKEN_BRACKET_L";
+        case TOKEN_BRACKET_R:
+            return "TOKEN_BRACKET_R";
         case TOKEN_SEMICOLON:
             return "TOKEN_SEMICOLON";
         case TOKEN_COLON:
@@ -35,8 +39,8 @@ const char* tokenType2Str(int type) {
             return "TOKEN_LT";
         case TOKEN_GT:
             return "TOKEN_GT";
-        case TOKEN_ARROW_R:
-            return "TOKEN_ARROW_R";
+        case TOKEN_OF:
+            return "TOKEN_OF";
         case TOKEN_INT:
             return "TOKEN_INT";
         case TOKEN_EOF:

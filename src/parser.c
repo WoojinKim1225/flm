@@ -32,8 +32,8 @@ ASTT* parserParseID(parserT* parser){
     strcpy(value, parser->token->value);
     parserEat(parser, TOKEN_ID);
 
-    if (parser->token->type == TOKEN_SUBS) {
-        parserEat(parser, TOKEN_SUBS);
+    if (parser->token->type == TOKEN_ASSIGNMENT) {
+        parserEat(parser, TOKEN_ASSIGNMENT);
         ASTT* ast = initAst(AST_ASSIGNMENT);
         ast->name = value;
         
@@ -41,45 +41,94 @@ ASTT* parserParseID(parserT* parser){
         return ast;
     } 
 
+    ASTT* ast = initAst(AST_VARIABLE);
+    ast->name = value;
+
     if (parser->token->type == TOKEN_COLON) {
-        ASTT* ast = initAst(AST_VARIABLE);
         ast->dataType = typename2int(parser->token->value);
         parserEat(parser, TOKEN_COLON);
         ast->dataSize = atoi(parser->token->value);
         parserEat(parser, TOKEN_INT);
-        ast->name = parser->token->value;
-        //parserEat(parser, TOKEN_ID);
-        printf("%d, %d, %s \n", ast->dataType, ast->dataSize, ast->name);
-        return ast;
+
+        if (parser->token->type == TOKEN_POINTER) {
+            ast->isPointer++;
+            parserEat(parser, TOKEN_POINTER);
+        }
+
+        if (parser->token->type == TOKEN_ID) {
+            ast->name = parser->token->value;
+        }
+        parserEat(parser, TOKEN_ID);
+
+        if (parser->token->type == TOKEN_BRACKET_L) {
+            parserEat(parser, TOKEN_BRACKET_L);
+            ast->isArray = 1;
+            parserEat(parser, TOKEN_BRACKET_R);
+        }
+
+    } else {
+        if (parser->token->type == TOKEN_PAREN_L) {
+            printf("test");
+            ast->type = AST_CALL;
+            ast->value = parserParseList(parser);
+        }
     }
+    return ast;
+}
+
+ASTT* parserParseBlock(parserT* parser){
+    parserEat(parser, TOKEN_BRACE_L);
+    ASTT* ast = initAst(AST_COMPOUND);
+
+    while(parser->token->type != TOKEN_BRACE_R) {
+        listPush(ast->children, parserParseExpr(parser));
+    }
+    parserEat(parser, TOKEN_BRACE_R);
+    return ast;
 }
 
 ASTT* parserParseList(parserT* parser){
     parserEat(parser, TOKEN_PAREN_L);
 
-    ASTT* compound = initAst(AST_COMPOUND);
-
-    listPush(compound->children, parserParseExpr(parser));
-    printf("asdfasdf123");
-
+    ASTT* ast = initAst(AST_COMPOUND);
+    listPush(ast->children, parserParseExpr(parser));
     while(parser->token->type == TOKEN_COMMA) {
-        printf("asdfasdf");
         parserEat(parser, TOKEN_COMMA);
-        listPush(compound->children, parserParseExpr(parser));
+        listPush(ast->children, parserParseExpr(parser));
     }
 
     parserEat(parser, TOKEN_PAREN_R);
-    return compound;
+
+    if (parser->token->type == TOKEN_ARROW_R){
+        parserEat(parser, TOKEN_ARROW_R);
+        ast->type = AST_FUNCTION;
+        ast->value = parserParseBlock(parser);
+
+
+        exit(3);
+    }
+    return ast;
+}
+
+ASTT* parserParseInt(parserT* parser){
+    int int_value = atoi(parser->token->value);
+    parserEat(parser, TOKEN_INT);
+
+    ASTT* ast = initAst(AST_INT);
+    ast->intValue = int_value;
+
+    return ast;
 }
 
 ASTT* parserParseExpr(parserT* parser){
     printf("%d\n", parser->token->type);
     switch (parser->token->type) {
-        case TOKEN_ID: return parserParseID(parser);
-        case TOKEN_PAREN_L: {
-            printf("entering parenthesis...\n");
+        case TOKEN_ID: 
+            return parserParseID(parser);
+        case TOKEN_PAREN_L: 
             return parserParseList(parser);
-        }
+        case TOKEN_INT:
+            return parserParseInt(parser);
         default: 
             printf("[Parser]: Unexpected token '%s'\n", token2Str(parser->token));
             exit(1);
@@ -91,6 +140,10 @@ ASTT* parserParseCompound(parserT* parser){
 
     while(parser->token->type != TOKEN_EOF) {
         listPush(compound->children, parserParseExpr(parser));
+
+        if (parser->token->type == TOKEN_SEMICOLON) {
+            parserEat(parser, TOKEN_SEMICOLON);
+        }
     }
     return compound;
 }

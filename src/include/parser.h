@@ -18,7 +18,11 @@ ASTT* parserParseID(parserT* parser);
 
 ASTT* parserParseExpr(parserT* parser);
 
+ASTT* parserParseBlock(parserT* parser);
+
 ASTT* parserParseList(parserT* parser);
+
+ASTT* parserParseInt(parserT* parser);
 
 ASTT* parserParseCompound(parserT* parser);
 

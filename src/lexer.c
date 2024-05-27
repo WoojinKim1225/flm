@@ -52,7 +52,7 @@ void lexerSkipWhitespace(lexerT* lexer){
 tokenT* lexerParseID(lexerT* lexer){
     char* value = calloc(1, sizeof(char));
 
-    while (isalnum(lexer->c)) {
+    while (isalnum(lexer->c) || lexer->c == '_') {
         value = realloc(value, (strlen(value)+ 2) * sizeof(char));
         strcat(value, (char[]){lexer->c, 0});
         lexerAdvance(lexer);
@@ -76,43 +76,51 @@ tokenT* lexerNextToken(lexerT* lexer){
         
         lexerSkipWhitespace(lexer);
 
-        if (isalpha(lexer->c)) {
+        if (isalpha(lexer->c) || lexer->c == '_') {
             return lexerParseID(lexer);
         }
 
         if (isdigit(lexer->c)) {
-            return lexerAdvanceWith(lexer, lexerParseNum(lexer));
+            return lexerParseNum(lexer);
         }
 
         switch (lexer->c)
         {
         case '-':
             if (lexerPeek(lexer, 1) == '>'){
-                return lexerAdvanceWith(lexer, initToken("->", TOKEN_ARROW_R));
+                return lexerAdvanceWith(lexer, (lexer, initToken("->", TOKEN_OF)));
             }
             break;
 
-        case '=':
-            return lexerAdvanceCurrent(lexer, TOKEN_SUBS);
-            break;
+        case '=': 
+            if (lexerPeek(lexer, 1) == '>'){
+                return lexerAdvanceWith(lexer, lexerAdvanceWith(lexer, initToken("=>", TOKEN_ARROW_R)));
+            }
+            return lexerAdvanceCurrent(lexer, TOKEN_ASSIGNMENT);
 
-        case '(': return lexerAdvanceCurrent(lexer, TOKEN_PAREN_L); break;
+        case '(': return lexerAdvanceCurrent(lexer, TOKEN_PAREN_L);
 
-        case ')': return lexerAdvanceCurrent(lexer, TOKEN_PAREN_R); break;
+        case ')': return lexerAdvanceCurrent(lexer, TOKEN_PAREN_R);
 
-        case '{': return lexerAdvanceCurrent(lexer, TOKEN_BRACE_L); break;
+        case '{': return lexerAdvanceCurrent(lexer, TOKEN_BRACE_L);
 
-        case '}': return lexerAdvanceCurrent(lexer, TOKEN_BRACE_R); break;
+        case '}': return lexerAdvanceCurrent(lexer, TOKEN_BRACE_R);
 
-        case ':': return lexerAdvanceCurrent(lexer, TOKEN_COLON); break;
+        case '[': return lexerAdvanceCurrent(lexer, TOKEN_BRACKET_L);
 
-        case ',': return lexerAdvanceCurrent(lexer, TOKEN_COMMA); break;
+        case ']': return lexerAdvanceCurrent(lexer, TOKEN_BRACKET_R);
 
-        case '<': return lexerAdvanceCurrent(lexer, TOKEN_LT); break;
+        case ':': return lexerAdvanceCurrent(lexer, TOKEN_COLON);
 
-        case '>': return lexerAdvanceCurrent(lexer, TOKEN_GT); break;
+        case ',': return lexerAdvanceCurrent(lexer, TOKEN_COMMA);
 
-        case ';': return lexerAdvanceCurrent(lexer, TOKEN_SEMICOLON); break;
+        case '*': return lexerAdvanceCurrent(lexer, TOKEN_POINTER);
+
+        case '<': return lexerAdvanceCurrent(lexer, TOKEN_LT);
+
+        case '>': return lexerAdvanceCurrent(lexer, TOKEN_GT);
+
+        case ';': return lexerAdvanceCurrent(lexer, TOKEN_SEMICOLON);
 
         case '\0': break;
         default:
