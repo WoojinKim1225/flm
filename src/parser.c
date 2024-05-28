@@ -32,15 +32,6 @@ ASTT* parserParseID(parserT* parser){
     strcpy(value, parser->token->value);
     parserEat(parser, TOKEN_ID);
 
-    if (parser->token->type == TOKEN_ASSIGNMENT) {
-        parserEat(parser, TOKEN_ASSIGNMENT);
-        ASTT* ast = initAst(AST_ASSIGNMENT);
-        ast->name = value;
-        
-        ast->value = parserParseExpr(parser);
-        return ast;
-    } 
-
     ASTT* ast = initAst(AST_VARIABLE);
     ast->name = value;
 
@@ -68,22 +59,20 @@ ASTT* parserParseID(parserT* parser){
 
     } else {
         if (parser->token->type == TOKEN_PAREN_L) {
-            printf("test");
             ast->type = AST_CALL;
             ast->value = parserParseList(parser);
         }
     }
-    return ast;
-}
 
-ASTT* parserParseBlock(parserT* parser){
-    parserEat(parser, TOKEN_BRACE_L);
-    ASTT* ast = initAst(AST_COMPOUND);
+    if (parser->token->type == TOKEN_ASSIGNMENT) {
+        parserEat(parser, TOKEN_ASSIGNMENT);
+        ASTT* ast = initAst(AST_ASSIGNMENT);
+        ast->name = value;
+        
+        ast->value = parserParseExpr(parser);
+        return ast;
+    } 
 
-    while(parser->token->type != TOKEN_BRACE_R) {
-        listPush(ast->children, parserParseExpr(parser));
-    }
-    parserEat(parser, TOKEN_BRACE_R);
     return ast;
 }
 
@@ -102,10 +91,7 @@ ASTT* parserParseList(parserT* parser){
     if (parser->token->type == TOKEN_ARROW_R){
         parserEat(parser, TOKEN_ARROW_R);
         ast->type = AST_FUNCTION;
-        ast->value = parserParseBlock(parser);
-
-
-        exit(3);
+        ast->value = parserParseCompound(parser);
     }
     return ast;
 }
@@ -121,7 +107,6 @@ ASTT* parserParseInt(parserT* parser){
 }
 
 ASTT* parserParseExpr(parserT* parser){
-    printf("%d\n", parser->token->type);
     switch (parser->token->type) {
         case TOKEN_ID: 
             return parserParseID(parser);
@@ -136,14 +121,24 @@ ASTT* parserParseExpr(parserT* parser){
 }
 
 ASTT* parserParseCompound(parserT* parser){
-    ASTT* compound = initAst(AST_COMPOUND);
+    unsigned int shouldClose = 0;
 
-    while(parser->token->type != TOKEN_EOF) {
-        listPush(compound->children, parserParseExpr(parser));
+    if (parser->token->type == TOKEN_BRACE_L){
+        parserEat(parser, TOKEN_BRACE_L);
+        shouldClose = 1;
+    }
+    ASTT* ast = initAst(AST_COMPOUND);
+
+    while(parser->token->type != TOKEN_EOF && parser->token->type != TOKEN_BRACE_R) {
+        listPush(ast->children, parserParseExpr(parser));
 
         if (parser->token->type == TOKEN_SEMICOLON) {
             parserEat(parser, TOKEN_SEMICOLON);
         }
     }
-    return compound;
+
+    if (shouldClose) {
+        parserEat(parser, TOKEN_BRACE_R);
+    }
+    return ast;
 }
