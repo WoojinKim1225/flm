@@ -48,8 +48,10 @@ ASTT* parserParseID(parserT* parser){
 
         if (parser->token->type == TOKEN_ID) {
             ast->name = parser->token->value;
+            value = parser->token->value;
         }
         parserEat(parser, TOKEN_ID);
+
 
         if (parser->token->type == TOKEN_BRACKET_L) {
             parserEat(parser, TOKEN_BRACKET_L);
@@ -87,9 +89,14 @@ ASTT* parserParseList(parserT* parser){
     }
 
     parserEat(parser, TOKEN_PAREN_R);
-
+    /*
     if (parser->token->type == TOKEN_ARROW_R){
         parserEat(parser, TOKEN_ARROW_R);
+        ast->type = AST_FUNCTION;
+        ast->value = parserParseCompound(parser);
+    }
+    */
+    if (parser->token->type == TOKEN_BRACE_L){
         ast->type = AST_FUNCTION;
         ast->value = parserParseCompound(parser);
     }

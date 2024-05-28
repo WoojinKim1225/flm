@@ -12,6 +12,8 @@ char* asmFCall(ASTT* ast);
 
 char* asmFInt(ASTT* ast);
 
+char* asmFRoot(ASTT* ast);
+
 char* asmF(ASTT* ast);
 
 #endif

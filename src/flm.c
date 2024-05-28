@@ -11,7 +11,7 @@ void flmCompile(char* src){
     parserT* parser = initParser(lexer);
     ASTT* root = parserParse(parser);
     
-    char* s = asmF(root);
+    char* s = asmFRoot(root);
     printf("%s\n", s);
     
 }
