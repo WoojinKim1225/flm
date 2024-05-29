@@ -1,12 +1,12 @@
 .section .text
-.global _start
+.globl _start
 _start:
 call main
 mov %eax, %ebx
 mov $1, %eax
-syscall
+int $0x80
 
-.global main
+.globl main
 main:
-mov $2, %eax
+mov $0, %eax
 ret

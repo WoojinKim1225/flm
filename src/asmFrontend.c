@@ -15,7 +15,6 @@ char* asmFCompound(ASTT* ast){
 }
 
 char* asmFAssignment(ASTT* ast){
-    //if (strcmp(ast->name, "main") == 0) {
     char* s = calloc(1, sizeof(char));
     if (ast->value->type == AST_FUNCTION){
         const char* template =  ".globl %s\n"
@@ -32,11 +31,6 @@ char* asmFAssignment(ASTT* ast){
     }
 
     return s;
-    //}
-    //const char* example = "mov $128, %eax";
-    //char* s = calloc(strlen(example) + 1, sizeof(char));
-    //strcpy(s, example);
-    //return s;
 }
 
 char* asmFVariable(ASTT* ast){
@@ -47,7 +41,6 @@ char* asmFCall(ASTT* ast){
     char* s = calloc(1, sizeof(char));
     if (strcmp(ast->name, "return") == 0) {
         ASTT* arg1 = (ASTT*)(ast->value->children->size ? ast->value->children->items[0] : (void*)0);
-        //printf("%d\n", arg1->type); type is integer!
         const char* template =  "mov $%d, %%eax\n"
                                 "ret\n";
         const char* retS = calloc(strlen(template) + 128, sizeof(char));
@@ -64,13 +57,24 @@ char* asmFInt(ASTT* ast){
 }
 
 char* asmFRoot(ASTT* ast){
+#if defined(__x86_64__) || defined(_M_X64)
     const char* sectionText = ".section .text\n"
-                              ".globl _start\n"
-                              "_start:\n"
-                              "call main\n"
-                              "mov %eax, %ebx\n"
-                              "mov $1, %eax\n"
-                              "syscall\n\n";
+                                ".globl _start\n"
+                                "_start:\n"
+                                "call main\n"
+                                "mov %eax, %ebx\n"
+                                "mov $60, %eax\n"
+                                "syscall\n\n"; // For 64-bit
+#else
+    const char* sectionText = ".section .text\n"
+                                ".globl _start\n"
+                                "_start:\n"
+                                "call main\n"
+                                "mov %eax, %ebx\n"
+                                "mov $1, %eax\n"
+                                "int $0x80\n\n"; // For 32-bit
+#endif
+
     char* value = (char*) calloc((strlen(sectionText) + 128), sizeof(char));
     strcpy(value, sectionText);
 
