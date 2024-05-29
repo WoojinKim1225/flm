@@ -7,7 +7,7 @@ char* flmReadFile(const char* filename){
     FILE* fp;
     char* line = NULL;
     size_t len = 0;
-    ssize_t read;
+    size_t read;
 
     fp = fopen(filename, "rb");
     if (fp == NULL) {
@@ -28,6 +28,20 @@ char* flmReadFile(const char* filename){
     if (line) {
         free(line);
     }
-    return buffer;
+    return buffer;   
+}
+
+void flmWriteFile(const char* filename, char* outBuffer){
+    FILE* fp;
+    char* line = NULL;
+
+    fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Could not open file for writing '%s'\n", filename);
+        exit(1);
+    }
+
+    fputs(outBuffer, fp);
     
+    fclose(fp);
 }
